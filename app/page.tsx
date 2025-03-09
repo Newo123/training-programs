@@ -1,101 +1,61 @@
-import Image from "next/image";
+import { Container } from '@/components/container';
+import { SpecializedSubjects } from '@/components/specializedSubjects';
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+const getData = async (): Promise<Program[]> =>
+	fetch('https://api.moscow.mba/products')
+		.then(result => result.json())
+		.catch(err => {
+			console.log(err);
+		});
+export const revalidate = 3600;
+export default async function Page() {
+	const response = await getData();
+	let content = [];
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+	for (let i = 0; i < response.length; i++) {
+		for (let j = 0; j < response[i].specializedSubjects.length; j++) {
+			if (response[i].specializedSubjects[j].skills.length > 0) {
+				content.push(response[i]);
+			}
+		}
+	}
+	content = content.slice(0, 5);
+
+	return (
+		<main className='flex flex-col min-h-screen py-[1.875rem] lg:py-[5rem]'>
+			<Container className='flex flex-col'>
+				<h1 className='text-[1.75rem] font-medium lg:text-[2.25rem] lg:font-bold leading-[120%] lg:mx-auto mb-[0.5rem] lg:mb-[1.375rem]'>
+					Специализированные дисциплины
+				</h1>
+				{content.map((item: Program) => (
+					<SpecializedSubjects key={item.id} {...item} />
+				))}
+				<div className='flex flex-col gap-[1.5rem] mt-[2.75rem] lg:grid lg:grid-cols-2 lg:gap-[1.875rem] lg:mt-[8.125rem]'>
+					<div className='flex flex-col gap-[1.875rem] bg-[#FF3535] py-[2.5rem] px-[1.25rem] relative lg:px-[4.625rem] lg:py-[3.5rem] lg:gap-[1.5rem] before:content-[""] before:absolute before:top-0 before:right-0 before:w-[1.625rem] before:h-[1.625rem] lg:before:w-[2.75rem] lg:before:h-[2.75rem] before:bg-[linear-gradient(to_top_right,#CD1800_50%,white_50%)]'>
+						<h6 className='font-bold leading-[120%] text-[1.625rem] text-white lg:text-[2.25rem]'>
+							Практические модули
+						</h6>
+						<p className='text-[1.25rem] font-light leading-[130%] text-white'>
+							Работа над собственными проектами: практика групповых
+							взаимодействий, кейс-методы, эссе
+						</p>
+					</div>
+					<div className='flex flex-col gap-[1.875rem] bg-[#2D2C2A] py-[2.5rem] px-[1.25rem] relative lg:px-[4.625rem] lg:py-[3.5rem] lg:gap-[1.5rem]'>
+						<h6 className='font-bold leading-[120%] text-[1.625rem] text-white lg:text-[2.25rem]'>
+							Практические модули
+						</h6>
+						<ul className='text-white flex flex-col gap-[1rem]'>
+							<li className='pl-[1.25rem] text-[1.25rem] font-light relative before:content-[""] before:absolute before:left-0 before:top-[.5rem] before:w-[.375rem] before:h-[.375rem] before:rounded-full before:bg-[#FF3535]'>
+								Бизнес-проектирование (подготовка итоговой аттестационной
+								работы, консультирование по бизнес-проектированию)
+							</li>
+							<li className='pl-[1.25rem] text-[1.25rem] font-light relative before:content-[""] before:absolute before:left-0 before:top-[.5rem] before:w-[.375rem] before:h-[.375rem] before:rounded-full before:bg-[#FF3535]'>
+								Защита итоговой аттестационной работы
+							</li>
+						</ul>
+					</div>
+				</div>
+			</Container>
+		</main>
+	);
 }
